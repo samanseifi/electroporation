@@ -1,5 +1,4 @@
-#F90 = /sw/bin/g95
-F90 = /usr/bin/gfortran-4.6
+F90 = /usr/local/bin/gfortran
 F77 = /usr/bin/f77
 FFLAGS =
 ########################################################################
@@ -12,10 +11,10 @@ F90_OBJS = manager.o
 ALL_OBJS = $(MOD_OBJ) $(F90_OBJS) 
 
 NDS_3D: $(ALL_OBJS) 
-	$(F90) $(FFLAGS) $(ALL_OBJS)   -o modelB
+	$(F90) $(FFLAGS) $(ALL_OBJS)   -o modelA
 
 clean:  
-	rm *.mod *.o *~ signal_* *.png *.csv modelB
+	rm *.mod *.o *~ signal_* *.png *.csv modelA
 
 clean2:
 	rm out_* 

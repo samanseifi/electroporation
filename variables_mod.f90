@@ -4,29 +4,28 @@ IMPLICIT NONE
 !GLOBAL VARIABLES
   integer               :: i,j, k, Nx, Ny , t_loop, il
   integer               :: file_skip, tmax
-  integer, parameter    :: Nmax=513,idum=92923329
+  integer, parameter    :: Nmax=2200,idum=92923932
   real*8                :: dt, dx, a_2, a_4, M, W2, dx2_in, ave_psi
   real*8                :: PSI(0:Nmax,0:Nmax)
   real*8                :: grad2(0:Nmax,0:Nmax)
   real*8                :: RHS(0:Nmax,0:NMax)
-  real*8                :: grad2mu(0:Nmax,0:Nmax)
   character(len=9)      :: cn
 
 CONTAINS
- 
+
  subroutine read_globals
   
- !read initial parameters from file (see input file for definitions)
+ !read initial parameters from file 
   open(1,file='input')
-    read(1,*) dx
-    read(1,*) dt
-    read(1,*) a_2
-    read(1,*) a_4
-    read(1,*) W2
-    read(1,*) file_skip
-    read(1,*) tmax
-    read(1,*) Nx
-    read(1,*) Ny
+    read(1,*) dx          !space step
+    read(1,*) dt          !time step
+    read(1,*) a_2         !coefficient of the phi^2 term in f(phi)
+    read(1,*) a_4         !coefficient of the phi^4 term in f(phi)
+    read(1,*) W2          !gradient squared coefficient squared W^2
+    read(1,*) file_skip   ! how often to print
+    read(1,*) tmax        !how many total time steps to take
+    read(1,*) Nx          !system size in the x direction
+    read(1,*) Ny          !system size in the y direction 
   close(1)
 
   !initialize specific parameters 
@@ -36,7 +35,7 @@ CONTAINS
 
   dx2_in = 1 / dx**2
 
-  !test that system sizes do not exceeed declared array dimensions (avoid this uning dynamic alloc)
+  !test that system sizes do not exceed declared dimensions (avoid this using dynamic allocation)
   if(Nx+1.gt.Nmax.or.Ny+1.gt.Nmax)then 
    print*, 'One of the system dimensions exceeds array dimensions'
    stop

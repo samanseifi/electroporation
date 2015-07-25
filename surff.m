@@ -3,8 +3,8 @@ function out=surff(n_dim,fskip,n1,n2)
 fnm='out'; %file sequence names
 %fskip=100;
 %% 
-sizex=512; %array size in 2nd index; x-left/right in code
-sizey=512; %array size in 1st index; y-up/down in code
+sizex=256; %array size in 2nd index; x-left/right in code
+sizey=256; %array size in 1st index; y-up/down in code
 for i=1:sizex
     x(i)=i-1; %physical size in x(left/right in code) 
 end; 
@@ -17,8 +17,8 @@ ymax=sizey-1; %relevant physical size in up/down dir
 xmin=0;
 xmax=sizex-1; %rellavent physical size in left/right dir
 if(n_dim==2)
- zmin=-0.165;
- zmax=-0.075;
+ zmin=-0.025;
+ zmax=-0.025;
 else
   zmin=-1;
   zmax=1;
@@ -27,7 +27,7 @@ end;
 %%
 for f_num=n1:fskip:n2
 
-figure %open figure window`
+figure %open figure window
 
 %"fch" string is the file being opened
 fch=[fnm,'_',num2str(f_num)]
@@ -48,7 +48,7 @@ shading interp;
 %no grid;
 %light('Position',[0 0 1]);
 
-%determine which field is being plotted and thus labeled
+%determine which field is being plotted and thus labelled
 if(n_dim==1)
  title(['Density. Time=',num2str(f_num)]);
 end
@@ -56,11 +56,11 @@ if(n_dim==2)
  title(['Concentration. Time=',num2str(f_num)]); 
 end
 
-%set plot dimentions and window aspect ratio
+!set plt dimensions and window aspect ratio
 axis([xmin xmax ymin ymax zmin zmax])
 set(gca,'PlotBoxAspectRatio',[sizex,sizey,sizey])
 grid on
-xlabel('x-axis');
+xlabel('x-axis'); 
 ylabel('y-axis');
 
    %%%printing figure to jpg file%%%%%%
@@ -69,9 +69,9 @@ ylabel('y-axis');
    end
    if(n_dim==2)
    fchnp1=['concentration',num2str(f_num),'.jpg'];
-   end
+   end,
    print('-r72','-djpeg100',fchnp1);
-   close;
+   
 
 end;
 %%

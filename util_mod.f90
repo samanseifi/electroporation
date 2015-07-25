@@ -5,7 +5,7 @@ implicit none ;save
 CONTAINS
 
 !----------------------------------------------------------------------------
-!print 2D array signal1 of dimension Nx by Ny into file numbered=file_no
+!print 2D array signal1 of dimensions Nx by Ny to a file number=file_no
 subroutine print_2Dfield(signal1, Nx, Ny, file_no)
   real*8, dimension(0:,0:)   ::signal1
   integer		     ::file_no, Nx,Ny !Nx, Ny -number of gridpoints
@@ -35,7 +35,7 @@ subroutine print_1Dfield(signal1, Nx, file_no)
 end subroutine print_1Dfield
 
  !--------------------------------------------------
- !converts integer "i" into a character string, referenced as "cn(1:il)" commands
+ !converts integer "i" to a character string, referenced as "cn(1:il)" in commands
  subroutine chari(i,ci,il)
     integer ::i,ii,i3,kk,k,j,j1,il
         real    ::ri
@@ -90,7 +90,7 @@ end if
 END FUNCTION ran
 
 !-----------------------------------------
-!generates guassian distributed deviates with zero mean and unit STD, uss 'ran'
+!generates guasian distributed deviates with zero mean and unit STD, uses 'ran'  
 FUNCTION gasdev(idum) 
 INTEGER idum 
 REAL gasdev  
@@ -117,7 +117,7 @@ return
 END FUNCTION gasdev
 
 !-----------------------------------------
-!guasian deviates as above, may not work on some compilers
+!gaussian deviates as above, may not work on some compilers
 FUNCTION gasdev2() 
 INTEGER idum 
 REAL gasdev2
@@ -144,7 +144,7 @@ return
 END FUNCTION gasdev2
 
 !--------------------------------------------------------------------
-!generates random seed
+!generates random seeds
   FUNCTION random_seed(NN, psi_01, init_seeds, seed_size, idum)
     INTEGER                   :: NN, asizex
     real*8, dimension(NN)      ::random_seed    
