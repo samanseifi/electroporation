@@ -27,6 +27,14 @@ CONTAINS !-----------
    end do  
   end do  
   
+  open(3,file='one_pore256',status='unknown')
+  do i=1,Nx
+   do j=1,Ny
+	read(3,*) PSI(i,j)
+   end do
+  end do
+  close(3)
+  
  !write out initial average value of the order parameter
   open(2,file='averga_psi',status='unknown')
   write(2,*) ave_psi/(Nx*Ny)
@@ -48,7 +56,7 @@ CONTAINS !-----------
     !2. calculate right hand side of model A
     do i=1, Nx
      do j=1,Ny
-      RHS(i,j)= W2*grad2(i,j)-a_2*PSI(I,j)-a_4*PSI(i,j)**3
+      RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))
      end do 
     end do
 

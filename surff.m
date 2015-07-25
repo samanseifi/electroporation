@@ -20,7 +20,7 @@ if(n_dim==2)
  zmin=-0.025;
  zmax=-0.025;
 else
-  zmin=-1;
+  zmin=0;
   zmax=1;
 end;
 
