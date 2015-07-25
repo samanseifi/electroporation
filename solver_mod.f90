@@ -22,7 +22,15 @@ CONTAINS !-----------
      PSI(i,j)=0.000001*gasdev2()
    end do  
   end do  
-
+  
+  open(3, file='one_pore', status='unknown')
+  do i=1,Nx
+   do j=1,Ny
+    read(3,*) PSI(i,j)
+   end do 
+  end do
+  close(3)
+	
   !initialize to zero the avergae of the ordr parameter
   ave_psi=0.0d0
   do i=1,Nx
@@ -34,7 +42,7 @@ CONTAINS !-----------
   !write the initial average value of the order parameter
   open(2,file='averga_psi',status='unknown')
   write(2,*) ave_psi/((Nx)*(Ny))
-
+  
   !print intial PSI field
   open(1,file='out_0',status='unknown')
     call print_2Dfield(PSI, Nx, Ny, 1)
