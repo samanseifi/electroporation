@@ -1,4 +1,4 @@
-F90 = /usr/local/bin/gfortran
+F90 = /usr/bin/gfortran-4.6
 F77 = /usr/bin/f77
 FFLAGS =
 ########################################################################
