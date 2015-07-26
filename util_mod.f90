@@ -2,7 +2,7 @@ MODULE UTIL
 USE VARIABLES
 implicit none ;save
 
-INCLUDE "/usr/include/fftw3.f"
+INCLUDE "/usr/include/fftw3.f" !or where ever your fftw library is installed
 
 CONTAINS
 
@@ -179,6 +179,7 @@ FUNCTION random_seed(NN, psi_01, init_seeds, seed_size, idum)
 END FUNCTION random_seed
 
 !----------------------------------------------------------------------
+!1D Fast Fourier Transform. Note: it calls fftw library 
 FUNCTION fft(in, N)
 	integer :: N
 	double complex in, out, fft
