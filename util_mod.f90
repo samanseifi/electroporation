@@ -2,6 +2,8 @@ MODULE UTIL
 USE VARIABLES
 implicit none ;save
 
+INCLUDE "/usr/include/fftw3.f"
+
 CONTAINS
 
 !----------------------------------------------------------------------------
@@ -177,6 +179,17 @@ FUNCTION random_seed(NN, psi_01, init_seeds, seed_size, idum)
 END FUNCTION random_seed
 
 !----------------------------------------------------------------------
-
+FUNCTION fft(in, N)
+	integer :: N
+	double complex in, out, fft
+    dimension in(N), out(N), fft(N)
+    integer*8 plan
+	
+	call dfftw_plan_dft_1d(plan,N,in,out,FFTW_FORWARD,FFTW_ESTIMATE)
+    call dfftw_execute_dft(plan, in, out)
+	call dfftw_destroy_plan(plan)
+	fft = out
+	
+END FUNCTION fft
 
 End module UTIL

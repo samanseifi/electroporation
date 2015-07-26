@@ -11,7 +11,7 @@ CONTAINS !-----------
 
 !This subroutine for time evolution of Model A
 subroutine calculate
-
+	
 	!initialize to zero the average of the order parameter
 	ave_psi=0.0d0 
   
