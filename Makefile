@@ -14,7 +14,7 @@ NDS_3D: $(ALL_OBJS)
 	$(F90) $(FFLAGS) $(ALL_OBJS)   -o modelA
 
 clean:  
-	rm *.mod *.o *~ signal_* *.png *.csv modelA
+	rm *.mod *.o *~ signal_* *.png *.jpg *.csv modelA
 
 clean2:
 	rm out_* 
