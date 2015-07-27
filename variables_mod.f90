@@ -10,7 +10,10 @@ real*8                :: PSI(0:Nmax,0:Nmax)
 real*8                :: grad2(0:Nmax,0:Nmax)
 real*8                :: RHS(0:Nmax,0:NMax)
 character(len=9)      :: cn
-character(len=10)			  :: initial
+character(len=10)	  :: initial
+
+double complex 		  :: PSIt(0:Nmax,0:Nmax)
+double complex 		  :: PSIc(0:Nmax,0:Nmax)
 
 CONTAINS
 
