@@ -181,10 +181,10 @@ END FUNCTION random_seed
 !----------------------------------------------------------------------
 !1D Fast Fourier Transform. Note: it calls fftw library 
 FUNCTION fft(in, N)
-	integer :: N
-	double complex in, out, fft
+	INTEGER :: N
+	DOUBLE COMPLEX in, out, fft
     dimension in(N), out(N), fft(N)
-    integer*8 plan
+    INTEGER*8 plan
 	
 	call dfftw_plan_dft_1d(plan,N,in,out,FFTW_FORWARD,FFTW_ESTIMATE)
     call dfftw_execute_dft(plan, in, out)
@@ -192,5 +192,35 @@ FUNCTION fft(in, N)
 	fft = out
 	
 END FUNCTION fft
+
+!----------------------------------------------------------------------
+!2D Fast Fourier Transform.
+FUNCTION fft2(in, N, M)
+	INTEGER :: N, M
+	DOUBLE COMPLEX in, out, fft2
+	dimension in(N,M), out(N,M), fft2(N,M)
+	INTEGER*8 plan
+	
+	call dfftw_plan_dft_2d(plan,N,M,in,out,FFTW_FORWARD,FFTW_ESTIMATE)
+	call dfftw_execute_dft(plan,in,out)
+	call dfftw_destroy_plan(plan)
+	fft2=out
+	
+END FUNCTION fft2
+
+!----------------------------------------------------------------------
+!2D Inverse FFT
+FUNCTION ifft2(in, N, M)
+	INTEGER :: N, M
+	DOUBLE COMPLEX in, out, ifft2
+	dimension in(N,M), out(N,M), ifft2(N,M)
+	INTEGER*8 plan
+	
+	call dfftw_plan_dft_2d(plan,N,M,in,out,FFTW_FORWARD,FFTW_ESTIMATE)
+    call dfftw_execute_dft(plan, in, out)
+    call dfftw_destroy_plan(plan)
+    ifft2=out/(N*M)
+    
+END FUNCTION ifft2
 
 End module UTIL
