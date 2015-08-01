@@ -1,6 +1,8 @@
 !!
-!!Module contains routines for numerical integration of Model A from text by Provatas and Elder
-! using central difference (spherical laplacian) formula used for nabla^2
+!!Module contains routines for numerical integration of Allen-Cahn model for system of lipid/pore under applied electricfield 
+!! using central difference (spherical laplacian) formula used for nabla^2
+!!The phase-field derivation is from the book by Provatas and Elder and this code developed on top of Model A
+!
 !
 MODULE SOLVER
 USE VARIABLES !!where variables are defined
@@ -9,47 +11,41 @@ IMPLICIT NONE
 
 CONTAINS !-----------
 
-!This subroutine for time evolution of Model A
+!This subroutine for time evolution of phase-feild equation
 subroutine calculate
 	
 	!initialize to zero the average of the order parameter
 	ave_psi=0.0d0 
   
-	! Determining the initial condition.
-	select case (initial)
-		case("randomseed")	
-			!set guassian ditributed initial conditions. NOTE: PSI-->order parameter 
-			!initialize random seed for random number generation in gasdev()
-			call srand(idum)
-			do i=1,Nx
-				do j=1,Ny
-					! set PSI=0 + fluctuations 
-					PSI(i,j)=0.001*gasdev2()
-					!update order parameter sum
-					ave_psi=ave_psi+PSI(i,j)
-				end do  
+	! Determining the initial condition (if initfile=yes load initial profile from file otherwise do the random seed)
+	if (initfile == 'yes') then
+		!reading the initial order parameter from file
+		open(3,file=initname,status='unknown')
+		do i=1,Nx
+			do j=1,Ny
+				read(3,*) PSI(i,j)
+				ave_psi=ave_psi+PSI(i,j)
+			end do
+		end do
+		close(3)
+	elseif if (initfile == 'no') then  ! default initial profile
+		!set guassian ditributed initial conditions. NOTE: PSI-->order parameter 
+		!initialize random seed for random number generation in gasdev()
+		call srand(idum)
+		do i=1,Nx
+			do j=1,Ny
+				! set PSI=0 + fluctuations 
+				PSI(i,j)=0.001*gasdev2()
+				!update order parameter sum
+				ave_psi=ave_psi+PSI(i,j)
 			end do  
-		case("OnePore256")
-			! read the initial condition for one pore
-			open(3,file='one_pore256',status='unknown')
-			do i=1,Nx
-				do j=1,Ny
-					read(3,*) PSI(i,j)
-					ave_psi=ave_psi+PSI(i,j)
-				end do
-			end do
-			close(3)
-		case("OnePore512")
-			! read the initial condition for one pore
-			open(4, file='one_pore512', status='unknown')
-			do i=1,Nx
-				do j=1,Ny
-					read(4,*) PSI(i,j)
-					ave_psi=ave_psi+PSI(i,j)
-				end do
-			end do
-			close(4)
-	end select 
+		end do  	
+	else		
+		print *, 'Error: variable initfile has to be yes or no!'
+		print *, ''
+		print *, 'Running failure!'
+		STOP
+	endif
   
 	!write out initial average value of the order parameter
 	open(2,file='averga_psi',status='unknown')
@@ -63,7 +59,7 @@ subroutine calculate
 	!!!START TIME MARCHING
 	do t_loop=1, tmax
 
-		!!!!!!!!!!!!!!! order parameter equation update (see text) !!!!!!!!!!!!!!!!!!!!
+		!!!!!!!!!!!!!!! order parameter equation update !!!!!!!!!!!!!!!!!!!!
 
 		!1. periodic BC for PSI and compute grad^2(PSI) array
 		call PERIODIC(PSI)
@@ -75,7 +71,11 @@ subroutine calculate
 				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))
 			end do 
 		end do
-
+		
+		PSIc = PSI
+		PSIt = fft2(PSIc, Nx, Ny)
+		
+		
 		!initialize to zero the average of the order parameter for this time step
 		ave_psi=0.0
 	
@@ -105,7 +105,7 @@ end subroutine calculate
 
 
 !-------------------------------------------------------------------
-!Finite difference calculation of Laplacian of A, stres answer in GR2. (See appendix)
+!Finite difference calculation of Laplacian of A, stres answer in GR2. (See appendix Provatas, Elder book)
 subroutine NABLA2(A,GR2)
 	real*8, dimension(0:,0:) ::A,GR2
     GR2=0.0d0
@@ -119,7 +119,7 @@ subroutine NABLA2(A,GR2)
 end subroutine NABLA2
 
 !-----------------------
-!enfroces periodic boundary conditions (see text)
+!enfroces periodic boundary conditions (see Provatas, Elder book)
 subroutine PERIODIC(A)
 	real*8, dimension(0:,0:) ::A
     A(Nx+1,:)    = A(1,:)
