@@ -28,7 +28,7 @@ subroutine calculate
 			end do
 		end do
 		close(3)
-	elseif if (initfile == 'no') then  ! default initial profile
+	elseif (initfile == 'no') then  ! default initial profile
 		!set guassian ditributed initial conditions. NOTE: PSI-->order parameter 
 		!initialize random seed for random number generation in gasdev()
 		call srand(idum)
