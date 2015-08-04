@@ -6,7 +6,7 @@ INCLUDE "/usr/include/fftw3.f" !or where ever your fftw library is installed
 
 CONTAINS
 
-!----------------------------------------------------------------------------
+!-----------------------------------------------------------------------
 !print 2D array signal1 of dimensions Nx by Ny to a file number=file_no
 subroutine print_2Dfield(signal1, Nx, Ny, file_no)
 	real*8, dimension(0:,0:)   ::signal1
@@ -22,7 +22,7 @@ subroutine print_2Dfield(signal1, Nx, Ny, file_no)
 	end do
 end subroutine print_2Dfield
 
-!----------------------------------------------------------------------------
+!-----------------------------------------------------------------------
 !1D analogue of previous routine
 subroutine print_1Dfield(signal1, Nx, file_no)
 	real*8, dimension(0:)      ::signal1
@@ -36,7 +36,7 @@ subroutine print_1Dfield(signal1, Nx, file_no)
 	end do
 end subroutine print_1Dfield
 
-!--------------------------------------------------
+!-----------------------------------------------------------------------
 !converts integer "i" to a character string, referenced as "cn(1:il)" in commands
 subroutine chari(i,ci,il)
 	integer ::i,ii,i3,kk,k,j,j1,il
@@ -65,7 +65,7 @@ subroutine chari(i,ci,il)
 	return
 end subroutine chari
 
-!-------------------------------------------------
+!-----------------------------------------------------------------------
 !generates uniform random numbers between [0,1]
 FUNCTION ran(idum) 
 	IMPLICIT NONE 
@@ -91,7 +91,7 @@ FUNCTION ran(idum)
 	ran=am*ior(iand(IM,ieor(ix,iy)),1) 
 END FUNCTION ran
 
-!-----------------------------------------
+!-----------------------------------------------------------------------
 !generates guasian distributed deviates with zero mean and unit STD, uses 'ran'  
 FUNCTION gasdev(idum) 
 	INTEGER idum 
@@ -118,7 +118,7 @@ FUNCTION gasdev(idum)
 	return 
 END FUNCTION gasdev
 
-!-----------------------------------------
+!-----------------------------------------------------------------------
 !gaussian deviates as above, may not work on some compilers
 FUNCTION gasdev2() 
 	INTEGER idum 
@@ -145,7 +145,7 @@ FUNCTION gasdev2()
 	return 
 END FUNCTION gasdev2
 
-!--------------------------------------------------------------------
+!-----------------------------------------------------------------------
 !generates random seeds
 FUNCTION random_seed(NN, psi_01, init_seeds, seed_size, idum)
 	INTEGER                   :: NN, asizex
@@ -178,7 +178,7 @@ FUNCTION random_seed(NN, psi_01, init_seeds, seed_size, idum)
 
 END FUNCTION random_seed
 
-!----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 !1D Fast Fourier Transform. Note: it calls fftw library 
 FUNCTION fft(in, N)
 	INTEGER :: N
@@ -193,7 +193,22 @@ FUNCTION fft(in, N)
 	
 END FUNCTION fft
 
-!----------------------------------------------------------------------
+!-----------------------------------------------------------------------
+!1D Inverse Fast Fourier Transform.
+FUNCTION ifft(in, N)
+	INTEGER :: N
+	DOUBLE COMPLEX in, out, ifft
+    dimension in(N), out(N), ifft(N)
+    INTEGER*8 plan
+	
+	call dfftw_plan_dft_1d(plan,N,in,out,FFTW_FORWARD,FFTW_ESTIMATE)
+    call dfftw_execute_dft(plan, in, out)
+	call dfftw_destroy_plan(plan)
+	ifft = out/N !should be divided by N?
+	
+END FUNCTION
+
+!-----------------------------------------------------------------------
 !2D Fast Fourier Transform.
 FUNCTION fft2(in, N, M)
 	INTEGER :: N, M
@@ -208,7 +223,7 @@ FUNCTION fft2(in, N, M)
 	
 END FUNCTION fft2
 
-!----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 !2D Inverse FFT
 FUNCTION ifft2(in, N, M)
 	INTEGER :: N, M
@@ -216,10 +231,10 @@ FUNCTION ifft2(in, N, M)
 	dimension in(N,M), out(N,M), ifft2(N,M)
 	INTEGER*8 plan
 	
-	call dfftw_plan_dft_2d(plan,N,M,in,out,FFTW_FORWARD,FFTW_ESTIMATE)
+	call dfftw_plan_dft_2d(plan,N,M,in,out,FFTW_BACKWARD,FFTW_ESTIMATE)
     call dfftw_execute_dft(plan, in, out)
     call dfftw_destroy_plan(plan)
-    ifft2=out/(N*M)
+    ifft2=out/(N*M) !Confirms with MATLAB values
     
 END FUNCTION ifft2
 
