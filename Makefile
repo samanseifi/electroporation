@@ -3,7 +3,7 @@ F77 = /usr/bin/f77
 FFLAGS =  -lfftw3
 ########################################################################
 MOD_OBJ =\
-          variables_mod.o util_mod.o solver_mod.o
+          variables_mod.o util_mod.o solver_mod.o electricfield_mod.o
 
 F90_OBJS = manager.o
 ##################################################################### Libraries
@@ -23,9 +23,11 @@ variables_mod.o        : variables_mod.f90
 		         $(F90) -c variables_mod.f90 $(FFLAGS)
 util_mod.o             :variables_mod.o util_mod.f90
 		         $(F90) -c util_mod.f90 $(FFLAGS)
+electricfield_mod.o	   :variables_mod.o util_mod.o electricfield_mod.f90
+		         $(F90) -c electricfield_mod.f90 $(FFLAGS)
 solver_mod.o           :variables_mod.o util_mod.o solver_mod.f90
 		         $(F90) -c solver_mod.f90 $(FFLAGS)
-manager.o 	       : manager.f90 variables_mod.o util_mod.o solver_mod.o
+manager.o 	       : manager.f90 variables_mod.o util_mod.o solver_mod.o electricfield_mod.o
 		         $(F90) -c manager.f90 $(FFLAGS)
 
 ######################################################################cleanup 

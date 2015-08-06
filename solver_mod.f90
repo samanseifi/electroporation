@@ -62,18 +62,27 @@ subroutine calculate
 		!!!!!!!!!!!!!!! order parameter equation update !!!!!!!!!!!!!!!!!!!!
 
 		!1. periodic BC for PSI and compute grad^2(PSI) array
-		call PERIODIC(PSI) !call ZEROFLUX(PSI)
+		!call PERIODIC(PSI)
+		call ZEROFLUX(PSI)
 		call NABLA2(PSI,grad2)
+		
+		!correction coeff for area
+		do i=1,Nx
+			do j=1,Ny
+				PSI_0(i,j) = 1 - PSI(i,j)
+				PSI_P(i,j) = 1 - PSI(i,j)*PSI(i,j)*(3 - 2*PSI(i,j))
+			end do
+		end do
+		c0 = SUM(PSI_0)/SUM(PSI_P)
+	
 	
 		!2. calculate right hand side of model A
 		do i=1, Nx
 			do j=1,Ny
-				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))
+				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))-sigma*c0*(6*PSI(i,j)-6*PSI(i,j)*PSI(i,j))
 			end do 
 		end do
 		
-		PSIc = PSI
-		PSIt = fft2(PSIc, Nx, Ny)
 		
 		
 		!initialize to zero the average of the order parameter for this time step
