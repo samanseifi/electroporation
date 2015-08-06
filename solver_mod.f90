@@ -1,8 +1,8 @@
-!!
+!! by Saman Seifi
 !!Module contains routines for numerical integration of Allen-Cahn model for system of lipid/pore under applied electricfield 
 !! using central difference (spherical laplacian) formula used for nabla^2
 !!The phase-field derivation is from the book by Provatas and Elder and this code developed on top of Model A
-!
+! 
 !
 MODULE SOLVER
 USE VARIABLES !!where variables are defined
@@ -62,7 +62,7 @@ subroutine calculate
 		!!!!!!!!!!!!!!! order parameter equation update !!!!!!!!!!!!!!!!!!!!
 
 		!1. periodic BC for PSI and compute grad^2(PSI) array
-		call PERIODIC(PSI)
+		call PERIODIC(PSI) !call ZEROFLUX(PSI)
 		call NABLA2(PSI,grad2)
 	
 		!2. calculate right hand side of model A
@@ -126,7 +126,17 @@ subroutine PERIODIC(A)
     A(0,:)       = A(Nx,:)
     A(:,Ny+1)    = A(:,1)
     A(:,0)       = A(:,Ny)
-end subroutine periodic
+end subroutine PERIODIC
+
+!-----------------------
+!enforce zero flux bondary conditions
+subroutine ZEROFLUX(A)
+	real*8, dimension(0:,0:) ::A
+	A(0,:)		 = A(2,:)
+	A(Nx+1,:)	 = A(Nx-1,:)
+	A(:,0)		 = A(:,2)
+	A(:,Ny+1)	 = A(:,Ny-1)
+end subroutine ZEROFLUX
 !!!!!!!!!!!!!!!!!!!!!!!
 
 END MODULE SOLVER
