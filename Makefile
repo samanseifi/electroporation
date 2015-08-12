@@ -25,7 +25,7 @@ util_mod.o             :variables_mod.o util_mod.f90
 		         $(F90) -c util_mod.f90 $(FFLAGS)
 electricfield_mod.o	   :variables_mod.o util_mod.o electricfield_mod.f90
 		         $(F90) -c electricfield_mod.f90 $(FFLAGS)
-solver_mod.o           :variables_mod.o util_mod.o solver_mod.f90
+solver_mod.o           :variables_mod.o util_mod.o electricfield_mod.o solver_mod.f90
 		         $(F90) -c solver_mod.f90 $(FFLAGS)
 manager.o 	       : manager.f90 variables_mod.o util_mod.o solver_mod.o electricfield_mod.o
 		         $(F90) -c manager.f90 $(FFLAGS)
