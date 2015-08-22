@@ -1,0 +1,5 @@
+0.001d0	:: lambda_in
+0.001d0	:: lambda_ex
+0.01d0	:: Cm
+1.0e-3	:: L
+1.7d0	:: U0
