@@ -16,7 +16,7 @@ CONTAINS !-----------
 subroutine calculate
 	
 	!initialize to zero the average of the order parameter
-	ave_psi=0.0d0 
+	ave_psi=0.50d0 
   
 	! Determining the initial condition (if initfile=yes load initial profile from file otherwise do the random seed)
 	if (initfile == 'yes') then
@@ -36,7 +36,7 @@ subroutine calculate
 		do i=1,Nx
 			do j=1,Ny
 				! set PSI=0 + fluctuations 
-				PSI(i,j)=0.001*gasdev2()
+				PSI(i,j)=0.5 + 0.001*gasdev2()
 				!update order parameter sum
 				ave_psi=ave_psi+PSI(i,j)
 			end do  
@@ -63,8 +63,8 @@ subroutine calculate
 		!!!!!!!!!!!!!!! order parameter equation update !!!!!!!!!!!!!!!!!!!!
 
 		!1. periodic BC for PSI and compute grad^2(PSI) array
-		!call PERIODIC(PSI)
-		call ZEROFLUX(PSI)
+		call PERIODIC(PSI)
+		!call ZEROFLUX(PSI)
 		call NABLA2(PSI,grad2)
 		
 		!correction coeff for area
