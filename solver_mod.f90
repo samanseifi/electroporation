@@ -7,6 +7,7 @@
 MODULE SOLVER
 USE VARIABLES !!where variables are defined
 USE UTIL      !!For printing and random number generation
+USE ELECTRICFIELD
 IMPLICIT NONE
 
 CONTAINS !-----------
@@ -74,12 +75,18 @@ subroutine calculate
 			end do
 		end do
 		c0 = SUM(PSI_0)/SUM(PSI_P)
-	
+		c1 = SUM(PSI)/(Nx*Ny)
+		
+		!getting the transmembrane voltage
+		Vm = V_m(dt*t_loop)
+		
+		sigma_elec = 0.5*Cm*Vm*Vm*c1*c1
+		!print*, sigma_elec
 	
 		!2. calculate right hand side of model A
 		do i=1, Nx
 			do j=1,Ny
-				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))-sigma*c0*(6*PSI(i,j)-6*PSI(i,j)*PSI(i,j))
+				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))-(sigma+sigma_elec)*c0*(6*PSI(i,j)-6*PSI(i,j)*PSI(i,j))
 			end do 
 		end do
 		
@@ -105,13 +112,19 @@ subroutine calculate
 			call print_2Dfield( PSI, Nx, Ny, 1)
 			close(1)
 		end if
+		
+		!!!!!!!!!!!!!!!!!!! I/O  (print out the voltage Vm)!!!!!!!!!!!!!!!!!!!!!!!!		
+		open(4, file='Vm',status='unknown')
+		write(4,*) Vm
+		
 
 	end do !time loop
 
 	!close file opened to store average of the order parameter
 	close(2)
+	close(4) !finish writing into Vm
+	
 end subroutine calculate 
-
 
 !-------------------------------------------------------------------
 !Finite difference calculation of Laplacian of A, stres answer in GR2. (See appendix Provatas, Elder book)
