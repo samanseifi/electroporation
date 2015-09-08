@@ -18,10 +18,11 @@ double complex 		  :: PSIc(0:Nmax,0:Nmax)
 
 !ELECTRIC STUFF
 real*8				  :: lambda_in, lambda_ex
-real*8			      :: Cm
+real*8			      :: Cm, C_LW
 real*8				  :: L, c1
 real*8				  :: Vm, U0
 real*8				  :: sigma_elec
+real*8				  :: Kw, Km
 
 CONTAINS
 
@@ -50,6 +51,8 @@ subroutine read_globals
 		open(2, file='input_elec')
 			read(2,*) lambda_in 	!conductivity of interior fluid
 			read(2,*) lambda_ex		!conductivity of exterior fluid
+			read(2,*) Km
+			read(2,*) Kw
 			read(2,*) Cm			!capacitance of the lipid membrane
 			read(2,*) L				!membrane to electrodes length
 			read(2,*) U0			!applied potential
@@ -60,6 +63,8 @@ subroutine read_globals
 	PSI=0.0d0
 	
 	W2 = (epsilon*gamma)
+	
+	C_LW = (Kw/Km - 1)*Cm
 	
 	M=1.0d0
 	
@@ -98,10 +103,10 @@ subroutine read_globals
 	
 	print*,'Global data:'
 	print*,'_________________________________'
-	print 10, sigma, gamma, dt, dx, tmax, file_skip
-10  FORMAT(' sigma = ',F8.4,/ ' gamma = ',F8.4,/ ' dt = ',F6.4,/' dx = ',F6.4,/ ' tmax = ',I6,/ ' file_skip = ',I6)
-	print 20, Nx, Ny
-20	FORMAT(' Nx = ',I6,/ ' Ny = ',I6)
+	print 10, sigma, gamma, epsilon, dt, dx, tmax
+10  FORMAT(' sigma = ',F8.4,/ ' gamma = ',F8.4,/ ' epsilon = ',F8.4,/ ' dt = ',F6.4,/' dx = ',F6.4,/ ' tmax = ',I6 )
+	print 20, file_skip, Nx, Ny
+20	FORMAT(' file_skip = ',I6,/ ' Nx = ',I6,/ ' Ny = ',I6)
 	print*, 'Initil File = ', initfile
 	if (initfile == 'yes') then
 		print*, 'Filename = ', initname

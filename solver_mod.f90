@@ -76,19 +76,20 @@ subroutine calculate
 			end do
 		end do
 		c0 = ((Nx*Ny) - SUM(PSI_0))/(Nx*Ny - SUM(PSI_P))
-		c1 = SUM(PSI)/(Nx*Ny)
+		c1 = (SUM(PSI))/(Nx*Ny)
 		
 		!getting the transmembrane voltage
 		Vm = V_m(dt*t_loop)
 		
-		sigma_elec = 0.5*Cm*Vm*Vm*c1*c1
+		sigma_elec = 0.5*C_LW*Vm*Vm*c1*c1
 		!print*, sigma_elec
 	
 		!2. calculate right hand side of model A
 		do i=1, Nx
 			do j=1,Ny
 !				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))-(sigma+sigma_elec)*c0*(6*PSI(i,j)-6*PSI(i,j)*PSI(i,j))
-				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))-(sigma+sigma_elec)*c0*(1.0 - tanh(PSI(i,j))*tanh(PSI(i,j)))
+				RHS(i,j) = (epsilon*gamma)*grad2(i,j) - (gamma/epsilon)*PSI(i,j)*0.5*(1 + 2*PSI(i,j)*PSI(i,j) - 3*PSI(i,j)) &
+					& -(sigma+sigma_elec)*c0*0.5*5.0*(1.0 - tanh(5.0*(PSI(i,j) - 0.5))*tanh(5.0*(PSI(i,j) - 0.5)))
 			end do 
 		end do
 		
