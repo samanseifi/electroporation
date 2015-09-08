@@ -30,7 +30,7 @@ for f_num=n1:fskip:n2
 figure %open figure window
 
 %"fch" string is the file being opened
-fch=[fnm,'_',num2str(f_num)]
+fch=[fnm,'_',num2str(f_num)];
 fich=load(fch);
 %assign file to array "den"
 den=fich(:,n_dim);

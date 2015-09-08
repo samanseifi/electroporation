@@ -70,11 +70,12 @@ subroutine calculate
 		!correction coeff for area
 		do i=1,Nx
 			do j=1,Ny
-				PSI_0(i,j) = 1 - PSI(i,j)
-				PSI_P(i,j) = 1 - PSI(i,j)*PSI(i,j)*(3 - 2*PSI(i,j))
+				PSI_0(i,j) = PSI(i,j)
+				!PSI_P(i,j) = PSI(i,j)*PSI(i,j)*(3 - 2*PSI(i,j))
+				PSI_P(i,j) = 0.5 + 0.5*tanh(5*(PSI(i,j) - 0.5))
 			end do
 		end do
-		c0 = SUM(PSI_0)/SUM(PSI_P)
+		c0 = ((Nx*Ny) - SUM(PSI_0))/(Nx*Ny - SUM(PSI_P))
 		c1 = SUM(PSI)/(Nx*Ny)
 		
 		!getting the transmembrane voltage
@@ -86,7 +87,8 @@ subroutine calculate
 		!2. calculate right hand side of model A
 		do i=1, Nx
 			do j=1,Ny
-				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))-(sigma+sigma_elec)*c0*(6*PSI(i,j)-6*PSI(i,j)*PSI(i,j))
+!				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))-(sigma+sigma_elec)*c0*(6*PSI(i,j)-6*PSI(i,j)*PSI(i,j))
+				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))-(sigma+sigma_elec)*c0*(1.0 - tanh(PSI(i,j))*tanh(PSI(i,j)))
 			end do 
 		end do
 		
@@ -113,16 +115,23 @@ subroutine calculate
 			close(1)
 		end if
 		
-		!!!!!!!!!!!!!!!!!!! I/O  (print out the voltage Vm)!!!!!!!!!!!!!!!!!!!!!!!!		
-		open(4, file='Vm',status='unknown')
+		!!!!!!!!!!!!!!!!!!! I/O  (print out stuff)!!!!!!!!!!!!!!!!!!!!!!!!		
+		open(4, file='Vm', status='unknown')
 		write(4,*) Vm
 		
+		open(5, file='c0', status='unknown')
+		write(5, *) c0
+		
+		open(6, file='c1', status='unknown')
+		write(6, *) c1
 
 	end do !time loop
 
 	!close file opened to store average of the order parameter
 	close(2)
 	close(4) !finish writing into Vm
+	close(5)
+	close(6)
 	
 end subroutine calculate 
 
