@@ -8,5 +8,5 @@
 256         ::Nx
 256         ::Ny
 yes	    ::initfile
-one_pore256 ::initname
+small_pore256 ::initname
 on	    ::elecfield
