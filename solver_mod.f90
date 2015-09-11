@@ -36,7 +36,7 @@ subroutine calculate
 		do i=1,Nx
 			do j=1,Ny
 				! set PSI=0 + fluctuations 
-				PSI(i,j)=0.5 + 0.001*gasdev2()
+				PSI(i,j)=1.0 ! + 0.001*gasdev2()
 				!update order parameter sum
 				ave_psi=ave_psi+PSI(i,j)
 			end do  
@@ -63,8 +63,8 @@ subroutine calculate
 		!!!!!!!!!!!!!!! order parameter equation update !!!!!!!!!!!!!!!!!!!!
 
 		!1. periodic BC for PSI and compute grad^2(PSI) array
-		call PERIODIC(PSI)
-		!call ZEROFLUX(PSI)
+		!call PERIODIC(PSI)
+		call ZEROFLUX(PSI)
 		call NABLA2(PSI,grad2)
 		
 		!correction coeff for area
@@ -89,7 +89,8 @@ subroutine calculate
 			do j=1,Ny
 !				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))-(sigma+sigma_elec)*c0*(6*PSI(i,j)-6*PSI(i,j)*PSI(i,j))
 				RHS(i,j) = (epsilon*gamma)*grad2(i,j) - (gamma/epsilon)*PSI(i,j)*0.5*(1 + 2*PSI(i,j)*PSI(i,j) - 3*PSI(i,j)) &
-					& -(sigma+sigma_elec)*c0*0.5*5.0*(1.0 - tanh(5.0*(PSI(i,j) - 0.5))*tanh(5.0*(PSI(i,j) - 0.5)))
+					& -(sigma+sigma_elec)*c0*0.5*5.0*(1.0 - tanh(5.0*(PSI(i,j) - 0.5))*tanh(5.0*(PSI(i,j) - 0.5))) &
+					& + 0.01*gasdev2()
 			end do 
 		end do
 		
