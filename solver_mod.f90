@@ -89,8 +89,8 @@ subroutine calculate
 			do j=1,Ny
 !				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))-(sigma+sigma_elec)*c0*(6*PSI(i,j)-6*PSI(i,j)*PSI(i,j))
 				RHS(i,j) = (epsilon*gamma)*grad2(i,j) - (gamma/epsilon)*PSI(i,j)*0.5*(1 + 2*PSI(i,j)*PSI(i,j) - 3*PSI(i,j)) &
-					& -(sigma+sigma_elec)*c0*0.5*5.0*(1.0 - tanh(5.0*(PSI(i,j) - 0.5))*tanh(5.0*(PSI(i,j) - 0.5))) &
-					& + 0.01*gasdev2()
+					& -10.275*(sigma+sigma_elec)*c0*0.5*5.0*(1.0 - tanh(5.0*(PSI(i,j) - 0.5))*tanh(5.0*(PSI(i,j) - 0.5))) &
+					& + 0.1*gasdev2()
 			end do 
 		end do
 		

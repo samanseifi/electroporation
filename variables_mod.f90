@@ -18,11 +18,13 @@ double complex 		  :: PSIc(0:Nmax,0:Nmax)
 
 !ELECTRIC STUFF
 real*8				  :: lambda_in, lambda_ex
-real*8			      :: Cm, C_LW
+real*8			      :: Cm, C_LW, C_0
 real*8				  :: L, c1
 real*8				  :: Vm, U0
 real*8				  :: sigma_elec
 real*8				  :: Kw, Km
+real*8				  :: epsilon_0 		!permitivitty constant
+real*8				  :: h      		!lipid bilayer thickness
 
 CONTAINS
 
@@ -64,7 +66,14 @@ subroutine read_globals
 	
 	W2 = (epsilon*gamma)
 	
-	C_LW = (Kw/Km - 1)*Cm
+	epsilon_0 = 8.8542e-12
+	
+	h = 5.0e-9
+	
+	C_0 = (Km*epsilon_0)/h
+	
+	!C_LW = (Kw/Km - 1)*Cm
+	C_LW = (Kw/Km - 1)*C_0
 	
 	M=1.0d0
 	

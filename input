@@ -4,7 +4,7 @@
 0.00d0	    ::sigma
 1.00d0      ::gamma
 1000        ::file_skip 
-100000      ::tmax 
+30000      ::tmax 
 256         ::Nx
 256         ::Ny
 no	    ::initfile

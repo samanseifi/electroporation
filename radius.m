@@ -17,16 +17,17 @@ ymax=sizey-1; %relevant physical size in up/down dir
 xmin=0;
 xmax=sizex-1; %rellavent physical size in left/right dir
 if(n_dim==2)
- zmin=-0.025;
- zmax=-0.025;
+    zmin=-0.025;
+    zmax=-0.025;
 else
-  zmin=0;
-  zmax=1;
+    zmin=0;
+    zmax=1;
 end;
 
 
 for f_num=n1:fskip:n2
-
+    
+    
     %"fch" string is the file being opened
     fch=[fnm,'_',num2str(f_num)];
     fich=load(fch);
@@ -36,9 +37,14 @@ for f_num=n1:fskip:n2
     rho=reshape(den, [sizey sizex]);
     i = (f_num- n1)/fskip;
     
-    r(i+1) = sqrt(sum(sum(1 - rho))/(pi));
-   
+    C = contour(x, y, rho, 0.5);
+    S = Contour2Area(C);
+    
+    rr(i+1) = sqrt(sum(sum(1 - rho))/(pi));
+    r(i+1) = sqrt(sum(S)/pi);
 end
-    plot(r, 'o')
+    plot(r, '-o')
+    hold on
+    plot(rr, '-rs')
 end
 
