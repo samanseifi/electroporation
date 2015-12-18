@@ -4,9 +4,9 @@
 0.00d0	    ::sigma
 0.312d0      ::gamma
 1000        ::file_skip 
-30000      ::tmax 
+100000      ::tmax 
 256         ::Nx
 256         ::Ny
-yes	    ::initfile
+no	    ::initfile
 small_pore256 ::initname
 on	    ::elecfield

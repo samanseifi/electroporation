@@ -56,15 +56,19 @@ subroutine calculate
 	open(1,file='out_0',status='unknown')
 	call print_2Dfield(PSI, Nx, Ny, 1)
 	close(1)
-
+	
+	Vm = 0.0
+	
+	open(4, file='Vm', status='unknown')
+	write(4,*) Vm
 	!!!START TIME MARCHING
 	do t_loop=1, tmax
 
 		!!!!!!!!!!!!!!! order parameter equation update !!!!!!!!!!!!!!!!!!!!
 
 		!1. periodic BC for PSI and compute grad^2(PSI) array
-		!call PERIODIC(PSI)
-		call ZEROFLUX(PSI)
+		call PERIODIC(PSI)
+		!call ZEROFLUX(PSI)
 		call NABLA2(PSI,grad2)
 		
 		!correction coeff for area
@@ -79,7 +83,9 @@ subroutine calculate
 		c1 = (SUM(PSI))/(Nx*Ny)
 		
 		!getting the transmembrane voltage
-		Vm = V_m(dt*t_loop)
+		!Vm = V_m(V_m_old, t_loop)
+		
+		Vm = Vm - dt*Vm*lambda*(Nx*Ny - SUM(PSI))/(Cm*h) + dt*lambda_ex*F(Vm)/Cm
 		
 		sigma_elec = 0.5*C_LW*Vm*Vm*c1*c1
 		!print*, sigma_elec
@@ -90,7 +96,7 @@ subroutine calculate
 !				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))-(sigma+sigma_elec)*c0*(6*PSI(i,j)-6*PSI(i,j)*PSI(i,j))
 				RHS(i,j) = (epsilon*gamma)*grad2(i,j) - (gamma/epsilon)*PSI(i,j)*0.5*(1 + 2*PSI(i,j)*PSI(i,j) - 3*PSI(i,j)) &
 					& -(sigma+sigma_elec)*c0*0.5*5.0*(1.0 - tanh(5.0*(PSI(i,j) - 0.5))*tanh(5.0*(PSI(i,j) - 0.5))) &
-					& + 0.01*gasdev2()
+					& + 0.1*gasdev2()
 			end do 
 		end do
 		

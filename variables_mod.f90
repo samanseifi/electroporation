@@ -17,7 +17,7 @@ double complex 		  :: PSIt(0:Nmax,0:Nmax)
 double complex 		  :: PSIc(0:Nmax,0:Nmax)
 
 !ELECTRIC STUFF
-real*8				  :: lambda_in, lambda_ex
+real*8				  :: lambda_in, lambda_ex, lambda
 real*8			      :: Cm, C_LW, C_0
 real*8				  :: L, c1
 real*8				  :: Vm, U0
@@ -68,12 +68,14 @@ subroutine read_globals
 	
 	epsilon_0 = 8.8542e-12
 	
-	h = 5.0e-9
+	h = 77.99 ! Non-dimensionalized (actual value = 5.0e-9)
 	
 	C_0 = (Km*epsilon_0)/h
 	
 	!C_LW = (Kw/Km - 1)*Cm
 	C_LW = (Kw/Km - 1)*C_0
+	
+	lambda = lambda_in
 	
 	M=1.0d0
 	
