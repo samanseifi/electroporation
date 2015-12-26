@@ -70,10 +70,10 @@ subroutine read_globals
 	
 	h = 77.99 ! Non-dimensionalized (actual value = 5.0e-9)
 	
-	C_0 = (Km*epsilon_0)/h
+	C_0 = (Km*epsilon_0)/(5.0e-9) ! h = 5.e-9 m
 	
 	!C_LW = (Kw/Km - 1)*Cm
-	C_LW = (Kw/Km - 1)*C_0
+	C_LW = (Kw/Km - 1.0)*C_0
 	
 	lambda = lambda_in
 	

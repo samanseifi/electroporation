@@ -14,7 +14,7 @@ FUNCTION F(Vm)
 !	V_m = U0*(1 - exp(-t/tau))
 	
 !	F = (exp(L)*U0 + Vm)/(1 - exp(2*L))
-	F = -(1/L)*(U0/2 + Vm/2)
+	F = -(1.0/L)*(U0/2.0 + Vm/2.0)
 	
 END FUNCTION F
 
