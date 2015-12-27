@@ -1,6 +1,6 @@
-function out=radius(n_dim, fskip, n1, n2)
+function [r, rr] = radius(n_dim, fskip, n1, n2)
 
-fnm='out'
+fnm='out';
 
 sizex = 256;
 sizey = 256;

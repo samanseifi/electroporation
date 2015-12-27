@@ -18,7 +18,7 @@ double complex 		  :: PSIc(0:Nmax,0:Nmax)
 
 !ELECTRIC STUFF
 real*8				  :: lambda_in, lambda_ex, lambda
-real*8			      :: Cm, C_LW, C_0
+real*8			      :: Cm, C_LW, C_0, Gm
 real*8				  :: L, c1
 real*8				  :: Vm, U0
 real*8				  :: sigma_elec
@@ -56,6 +56,7 @@ subroutine read_globals
 			read(2,*) Km
 			read(2,*) Kw
 			read(2,*) Cm			!capacitance of the lipid membrane
+			read(2,*) Gm			!conductance of the lipid membrane
 			read(2,*) L				!membrane to electrodes length
 			read(2,*) U0			!applied potential
 		close(2)
@@ -133,8 +134,8 @@ subroutine read_globals
 		print*, '_________________________________'
 		print 30, lambda_in, lambda_ex, Cm
 30		FORMAT(' Interior Cond. = ',F8.4,/ ' Exterior Cond. = ',F8.4,/ ' Lipid Capcitance = ',F8.4)
-		print 40, L, U0
-40		FORMAT(' Electrod Length = ', F8.4,/ ' Applied Potential = ',F8.4)
+		print 40, Gm, L, U0
+40		FORMAT(' Lipid Conductance = ', F8.4,/ ' Electrod Length = ', F8.4,/ ' Applied Potential = ',F8.4)
 		print*, '_________________________________'
 	endif
 	
