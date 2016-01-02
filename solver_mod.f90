@@ -85,12 +85,12 @@ subroutine calculate
 		!getting the transmembrane voltage
 		!Vm = V_m(V_m_old, t_loop)
 		
-		Vm = Vm + Gm*Vm*dt/Cm - dt*Vm*lambda*(Nx*Ny - SUM(PSI))/(Cm*h) + dt*lambda_ex*F(Vm)/Cm
+		Vm = Vm - dt*Vm*lambda*(Nx*Ny - SUM(PSI))/(Cm*h) + dt*lambda_ex*F(Vm)/Cm
 		
-		sigma_elec = 0.5*C_LW*Vm*Vm*c1*c1
+		sigma_elec = 0.5*C_LW*Vm*Vm
 		open(7, file='sigma_e', status='unknown')
 		write(7, *) sigma_elec
-		
+	
 		!print*, sigma_elec
 	
 		!2. calculate right hand side of model A
