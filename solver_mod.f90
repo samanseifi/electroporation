@@ -87,7 +87,7 @@ subroutine calculate
 		
 		Vm = Vm - dt*Vm*lambda*(Nx*Ny - SUM(PSI))/(Cm*h) + dt*lambda_ex*F(Vm)/Cm
 		
-		sigma_elec = 0.5*C_LW*Vm*Vm
+		sigma_elec = 0.5*C_LW*Vm*Vm*c1*c1
 		open(7, file='sigma_e', status='unknown')
 		write(7, *) sigma_elec
 	
