@@ -85,7 +85,13 @@ subroutine calculate
 		!getting the transmembrane voltage
 		!Vm = V_m(V_m_old, t_loop)
 		
+		!C_LW = Km*epsilon_0*(1.0 - SUM(PSI_P)/(Nx*Ny))/(5.0e-9) + Kw*epsilon_0*(SUM(PSI_P)/Nx*Ny)/(5.0e-9)
+		!Cm = C_LW
+		open(70, file='Cm', status='unknown')
+		write(70, *) Cm
+		
 		Vm = Vm - dt*Vm*lambda*(Nx*Ny - SUM(PSI))/(Cm*h) + dt*lambda_ex*F(Vm)/Cm
+		
 		
 		sigma_elec = 0.5*C_LW*Vm*Vm*c1*c1
 		open(7, file='sigma_e', status='unknown')
