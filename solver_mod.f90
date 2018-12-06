@@ -90,10 +90,11 @@ subroutine calculate
 		open(70, file='Cm', status='unknown')
 		write(70, *) Cm
 		
+		Cm = 0.01*c1
 		Vm = Vm - dt*Vm*lambda*(Nx*Ny - SUM(PSI))/(Cm*h) + dt*lambda_ex*F(Vm)/Cm
 		
 		
-		sigma_elec = 0.5*C_LW*Vm*Vm*c1*c1
+		sigma_elec = 0.5*C_LW*Vm*Vm
 		open(7, file='sigma_e', status='unknown')
 		write(7, *) sigma_elec
 	
@@ -105,7 +106,7 @@ subroutine calculate
 !				RHS(i,j)= W2*grad2(i,j)-PSI(i,j)*(1+2*PSI(i,j)*PSI(i,j)-3*PSI(i,j))-(sigma+sigma_elec)*c0*(6*PSI(i,j)-6*PSI(i,j)*PSI(i,j))
 				RHS(i,j) = (epsilon*gamma)*grad2(i,j) - (gamma/epsilon)*PSI(i,j)*0.5*(1 + 2*PSI(i,j)*PSI(i,j) - 3*PSI(i,j)) &
 					& -(sigma+sigma_elec)*c0*0.5*5.0*(1.0 - tanh(5.0*(PSI(i,j) - 0.5))*tanh(5.0*(PSI(i,j) - 0.5))) &
-					& + 0.01*gasdev2()
+					& + 0.5*gasdev2()
 			end do 
 		end do
 		

@@ -1,5 +1,5 @@
 0.50d0      ::dx
-0.01d0      ::dt
+0.001d0      ::dt
 0.25d0      ::epsilon
 0.00d0	    ::sigma
 0.312d0      ::gamma
