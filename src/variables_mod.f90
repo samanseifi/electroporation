@@ -31,9 +31,9 @@ CONTAINS
 subroutine read_globals
 
 	INTEGER 		  :: num_lines, ios, k
-	character(len=1)  :: junk	
-	
-	!read initial parameters from file 
+	character(len=1)  :: junk
+
+	! read initial parameters from file
 	open(1,file='../inputs/input')
 		read(1,*) dx          !space step
 		read(1,*) dt          !time step
