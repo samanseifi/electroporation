@@ -43,12 +43,12 @@ subroutine read_globals
 		read(1,*) file_skip   ! how often to print
 		read(1,*) tmax        !how many total time steps to take
 		read(1,*) Nx          !system size in the x direction
-		read(1,*) Ny          !system size in the y direction 
+		read(1,*) Ny          !system size in the y direction
 		read(1,*) initfile	  !check if it reads the initial condition from a data file (= "yes" or "no")
 		read(1,*) initname    !determining the initial condition
 		read(1,*) elecfield	  !switch to turn on/off the electric field (= "on" or "off")
 	close(1)
-	
+
 	if (elecfield == 'on') then
 		open(2, file='../inputs/input_elec')
 			read(2,*) lambda_in 	!conductivity of interior fluid
@@ -61,33 +61,33 @@ subroutine read_globals
 			read(2,*) U0			!applied potential
 		close(2)
 	endif
-	
-	!initialize specific parameters 
+
+	!initialize specific parameters
 	PSI=0.0d0
-	
+
 	W2 = (epsilon*gamma)
-	
+
 	epsilon_0 = 8.8542e-12
-	
+
 	h = 77.99 ! Non-dimensionalized (actual value = 5.0e-9)
-	
+
 	C_0 = (Km*epsilon_0)/(5.0e-9) ! h = 5.e-9 m
-	
+
 	!C_LW = (Kw/Km - 1)*Cm
 	C_LW = (Kw/Km - 1.0)*C_0
-	
+
 	lambda = lambda_in
-	
+
 	M=1.0d0
-	
+
 	dx2_in = 1 / dx**2
-	
+
 	!test that system sizes do not exceed declared dimensions (avoid this using dynamic allocation)
-	if(Nx+1.gt.Nmax.or.Ny+1.gt.Nmax)then 
+	if(Nx+1.gt.Nmax.or.Ny+1.gt.Nmax)then
 		print*, 'One of the system dimensions exceeds array dimensions'
 		stop
 	endif
-	
+
 	!teset if the system size given in initial file is the same as it defined in Nx and Ny
 	num_lines = 0
 	if (initfile =='yes') then
@@ -103,16 +103,16 @@ subroutine read_globals
 			endif
 			num_lines = num_lines + 1 !number of lines in the file
 		enddo
-		rewind(0) 
+		rewind(0)
 		if (mod(num_lines, Nx*Ny) /= 0) then
 			print*, 'Error: The system size of the initial file does not'
 			print*, 'maatch with your domain size Nx and Ny'
 			print*, ''
 			print*, 'Runing failure!'
 			STOP
-		endif 
+		endif
 	endif
-	
+
 	print*,'Global data:'
 	print*,'_________________________________'
 	print 10, sigma, gamma, epsilon, dt, dx, tmax
@@ -127,7 +127,7 @@ subroutine read_globals
 	endif
 	print*, 'Electric field = ', elecfield
 	print*,'_________________________________'
-	
+
 	if (elecfield == 'on') then
 		print*, ''
 		print*, 'Electric data:'
@@ -138,7 +138,7 @@ subroutine read_globals
 40		FORMAT(' Lipid Conductance = ', F8.4,/ ' Electrod Length = ', F8.4,/ ' Applied Potential = ',F8.4)
 		print*, '_________________________________'
 	endif
-	
+
 end subroutine read_globals
 
 

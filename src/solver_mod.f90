@@ -15,7 +15,7 @@ CONTAINS !-----------
 !This subroutine for time evolution of phase-feild equation
 subroutine calculate
 	integer, allocatable :: seed(:)
-	integer :: Nseed
+	integer :: Nseed, i
 
 	!initialize to zero the average of the order parameter
 	ave_psi=0.50d0
@@ -34,7 +34,7 @@ subroutine calculate
 	elseif (initfile == 'no') then  ! default initial profile
 		!set guassian ditributed initial conditions. NOTE: PSI-->order parameter
 		!initialize random seed for random number generation in gasdev()
-		CALL RANDOM_SEED(size = Nseed)
+		call random_seed(size = Nseed)
 		ALLOCATE(seed(Nseed))
 		seed = idum
 		call random_seed(put=seed)
@@ -48,10 +48,7 @@ subroutine calculate
 			end do
 		end do
 	else
-		print *, 'Error: variable initfile has to be yes or no!'
-		print *, ''
-		print *, 'Running failure!'
-		STOP
+		error stop 'Error: variable initfile has to be yes or no!'
 	endif
 
 	!write out initial average value of the order parameter
