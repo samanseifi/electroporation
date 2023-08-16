@@ -51,17 +51,17 @@ subroutine read_globals
 	!membrane to electrodes length
 	!applied potential
 
-	INTEGER 		  :: num_lines, ios, k
+	INTEGER 		  :: num_lines, ios, k, u
 	character(len=1)  :: junk
 
 	! read initial parameters from file
-	open(1,file='../inputs/input.nml', status='old')
-	read(1, nml=input_params)
+	open(newunit=u,file='../inputs/input.nml', status='old')
+	read(u, nml=input_params)
 
 	if (elecfield == 'on') then
-		read(1, nml=input_elec)
+		read(u, nml=input_elec)
 	endif
-	close(1)
+	close(u)
 
 	!initialize specific parameters
 	PSI=0.0d0
@@ -91,14 +91,14 @@ subroutine read_globals
 	!teset if the system size given in initial file is the same as it defined in Nx and Ny
 	num_lines = 0
 	if (initfile =='yes') then
-		open(0, file=initname, status='unknown')
+		open(newunit=u, file=initname, status='unknown')
 		do k=1,1000000
-			read(0,*, IOSTAT=ios) junk
+			read(u,*, IOSTAT=ios) junk
 			if (ios /= 0) exit
 			if (k == 1000000) error stop 'Error: Maximum number of records exceeded'
 			num_lines = num_lines + 1 !number of lines in the file
 		enddo
-		rewind(0)
+		close(u)
 		if (mod(num_lines, Nx*Ny) /= 0) then
 			error stop 'Error: The system size of the initial file does not maatch with your domain size Nx and Ny'
 		endif

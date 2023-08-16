@@ -15,7 +15,7 @@ CONTAINS !-----------
 !This subroutine for time evolution of phase-feild equation
 subroutine calculate
 	integer, allocatable :: seed(:)
-	integer :: Nseed, i
+	integer :: Nseed, i, u
 
 	!initialize to zero the average of the order parameter
 	ave_psi=0.50d0
@@ -56,9 +56,9 @@ subroutine calculate
 	write(2,*) ave_psi/(Nx*Ny)
 
 	!print intial PSI field
-	open(1,file='out_0',status='unknown')
-	call print_2Dfield(PSI, Nx, Ny, 1)
-	close(1)
+	open(newunit=u,file='out_0',status='unknown')
+	call print_2Dfield(PSI, Nx, Ny, u)
+	close(u)
 
 	Vm = 0.0
 
@@ -131,9 +131,9 @@ subroutine calculate
 
 		if(mod(t_loop,file_skip)+1 == 1)then
 			call chari(t_loop,cn,il)
-			open(1,file='out_'//cn(1:il),status='unknown')
-			call print_2Dfield( PSI, Nx, Ny, 1)
-			close(1)
+			open(newunit=u,file='out_'//cn(1:il),status='unknown')
+			call print_2Dfield( PSI, Nx, Ny, u)
+			close(u)
 		end if
 
 		!!!!!!!!!!!!!!!!!!! I/O  (print out stuff)!!!!!!!!!!!!!!!!!!!!!!!!
