@@ -54,8 +54,13 @@ subroutine read_globals
 	INTEGER 		  :: num_lines, ios, k, u
 	character(len=1)  :: junk
 
+	character(1024) :: input_dir
+
+	call get_command_argument(1, input_dir, status=u)
+	if (u/=0) error stop "please specify input directory like:  ./inputs/"
+
 	! read initial parameters from file
-	open(newunit=u,file='../inputs/input.nml', status='old')
+	open(newunit=u,file=trim(input_dir) // '/input.nml', status='old')
 	read(u, nml=input_params)
 
 	if (elecfield == 'on') then

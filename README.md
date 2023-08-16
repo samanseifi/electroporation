@@ -14,3 +14,9 @@ cmake --build build
 ```
 
 the executable then is created in `build` with name `electroporation`.
+
+Run the program, specifying the data directory like:
+
+```sh
+build/electroporation ./inputs
+```
