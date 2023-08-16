@@ -4,13 +4,17 @@ implicit none ;save
 
 CONTAINS
 
+impure elemental real function rand_num()
+	call random_number(rand_num)
+end function rand_num
+
 !-----------------------------------------------------------------------
 !print 2D array signal1 of dimensions Nx by Ny to a file number=file_no
 subroutine print_2Dfield(signal1, Nx, Ny, file_no)
 	real*8, dimension(0:,0:)   ::signal1
 	integer		     ::file_no, Nx,Ny !Nx, Ny -number of gridpoints
 	integer		     ::i,j
-	
+
 	! print 2D field              !!!!!!!!!!!
 	do i=1, Nx
 		do j=1, Ny
@@ -26,7 +30,7 @@ subroutine print_1Dfield(signal1, Nx, file_no)
 	real*8, dimension(0:)      ::signal1
 	integer		     ::file_no, Nx !Nx -number of gridpoints
 	integer		     ::i,j
-	
+
 	! print 1D field              !!!!!!!!!!!
 	do i=1, Nx
 		write(file_no,10) signal1(i)
@@ -63,117 +67,60 @@ subroutine chari(i,ci,il)
 	return
 end subroutine chari
 
-!-----------------------------------------------------------------------
-!generates uniform random numbers between [0,1]
-FUNCTION ran(idum) 
-	IMPLICIT NONE 
-	INTEGER, PARAMETER :: K4B=selected_int_kind(9) 
-	INTEGER(K4B), INTENT(INOUT) :: idum 
-	REAL :: ran  
-	INTEGER(K4B), PARAMETER :: IA=16807,IM=2147483647,IQ=127773,IR=2836 
-	REAL, SAVE :: am
-	INTEGER(K4B), SAVE :: ix=-1,iy=-1,k 
-
-	if (idum <= 0 .or. iy < 0) then 
-		am=nearest(1.0,-1.0)/IM 
-		iy=ior(ieor(888889999,abs(idum)),1) 
-		ix=ieor(777755555,abs(idum)) 
-		idum=abs(idum)+1 
-	end if 
-	ix=ieor(ix,ishft(ix,13)) 
-	ix=ieor(ix,ishft(ix,-17)) 
-	ix=ieor(ix,ishft(ix,5)) 
-	k=iy/IQ 
-	iy=IA*(iy-k*IQ)-IR*k 
-	if (iy < 0) iy=iy+IM 
-	ran=am*ior(iand(IM,ieor(ix,iy)),1) 
-END FUNCTION ran
 
 !-----------------------------------------------------------------------
-!generates guasian distributed deviates with zero mean and unit STD, uses 'ran'  
-FUNCTION gasdev(idum) 
-	INTEGER idum 
-	REAL gasdev  
-	INTEGER iset 
-	REAL fac,gset,rsq,v1,v2,ran1 
-	SAVE iset,gset 
-	DATA iset/0/ 
-	
-	if (idum.lt.0) iset=0 
-	if (iset.eq.0) then 
-1		v1=2.0*ran(idum)-1.0 
-		v2=2.0*ran(idum)-1.0 
-		rsq=v1**2+v2**2 
-	if(rsq.ge.1..or.rsq.eq.0.)goto 1 
-		fac=sqrt(-2.*log(rsq)/rsq) 
-		gset=v1*fac 
-		gasdev=v2*fac 
-		iset=1 
-	else 
-		gasdev=gset 
-		iset=0 
-	endif 
-	return 
+!generates guasian distributed deviates with zero mean and unit STD, uses 'ran'
+FUNCTION gasdev(idum)
+	INTEGER idum
+	REAL gasdev
+	INTEGER iset
+	REAL fac,gset,rsq,v1,v2,ran1
+	SAVE iset,gset
+	DATA iset/0/
+
+	if (idum.lt.0) iset=0
+	if (iset.eq.0) then
+1		v1=2.0*ran(idum)-1.0
+		v2=2.0*ran(idum)-1.0
+		rsq=v1**2+v2**2
+	if(rsq.ge.1..or.rsq.eq.0.)goto 1
+		fac=sqrt(-2.*log(rsq)/rsq)
+		gset=v1*fac
+		gasdev=v2*fac
+		iset=1
+	else
+		gasdev=gset
+		iset=0
+	endif
+	return
 END FUNCTION gasdev
 
 !-----------------------------------------------------------------------
 !gaussian deviates as above, may not work on some compilers
-FUNCTION gasdev2() 
-	INTEGER idum 
+FUNCTION gasdev2()
+	INTEGER idum
 	REAL gasdev2
-	INTEGER iset 
-	REAL fac,gset,rsq,v1,v2,ran1 
-	SAVE iset,gset 
-	DATA iset/0/ 
-	
-	if (idum.lt.0) iset=0 
-	if (iset.eq.0) then 
-1  		v1=2.0*rand()-1.0 
-		v2=2.0*rand()-1.0 
-		rsq=v1**2+v2**2 
-		if(rsq.ge.1..or.rsq.eq.0.)goto 1 
-			fac=sqrt(-2.*log(rsq)/rsq) 
-			gset=v1*fac 
-			gasdev2=v2*fac 
-			iset=1 
-		else 
-			gasdev2=gset 
-			iset=0 
-		endif 
-	return 
+	INTEGER iset
+	REAL fac,gset,rsq,v1,v2,ran1
+	SAVE iset,gset
+	DATA iset/0/
+
+	if (idum.lt.0) iset=0
+	if (iset.eq.0) then
+1  		v1=2.0*rand_num()-1.0
+		v2=2.0*rand_num()-1.0
+		rsq=v1**2+v2**2
+		if(rsq.ge.1..or.rsq.eq.0.)goto 1
+			fac=sqrt(-2.*log(rsq)/rsq)
+			gset=v1*fac
+			gasdev2=v2*fac
+			iset=1
+		else
+			gasdev2=gset
+			iset=0
+		endif
+	return
 END FUNCTION gasdev2
 
-!-----------------------------------------------------------------------
-!generates random seeds
-FUNCTION random_seed(NN, psi_01, init_seeds, seed_size, idum)
-	INTEGER                   :: NN, asizex
-    real*8, dimension(NN)     ::random_seed    
-    INTEGER                   :: i, j, k, i_size, init_seeds, seed_size
-    INTEGER                   :: i_seed, i_position, idum
-    REAL*8                    :: psi_01
-	asizex = NN
-	random_seed = psi_01
-	do k=1, init_seeds
-		!random size generation for k-th seed
-		i_size = 1+int(seed_size*ran(idum))
-		if(i_size<1) i_size=1 
-		! print*, 'Seed, seed size ixj:', k, i_size, j_size
-		!random position generation for k-th seed
-		i_seed = 1+int(asizex * ran(idum))
-		if(i_seed<1) i_seed=1 
-		! print*, 'Seed, seed position ixj:', k, i_seed, j_seed
-		!boundary conditions 
-		do i=1,i_size
-			if(i_seed+i>asizex)then 
-				i_position = ((i_seed+i)-asizex)
-			else 
-				i_position = i_seed+i
-			end if
-			! print*, 'i_pos :', i_position
-			random_seed(i_position) = 0.1*gasdev(idum)
-		end do
-	end do
-
-END FUNCTION random_seed
 
 End module UTIL

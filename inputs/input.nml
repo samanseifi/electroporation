@@ -1,0 +1,25 @@
+&input_params
+dx = 0.50d0
+dt = 0.001d0
+epsilon = 0.25d0
+sigma = 0.00d0
+gamma = 0.312d0
+file_skip = 1000
+tmax = 100000
+Nx = 256
+Ny = 256
+initfile = 'no'
+initname = 'small_pore256'
+elecfield = 'on'
+/
+
+&input_elec
+lambda_in = 0.001d0
+lambda_ex = 0.001d0
+Km = 2.000d0
+Kw = 80.00d0
+Cm = 0.01d0
+Gm = 0.00d0
+L = 1.0e-3
+U0 = -1.0d0
+/

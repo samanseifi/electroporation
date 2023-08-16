@@ -30,89 +30,85 @@ CONTAINS
 
 subroutine read_globals
 
-	INTEGER 		  :: num_lines, ios, k
+	namelist /input_params/ dx, dt, epsilon, sigma, gamma, file_skip, tmax, Nx, Ny, initfile, initname, elecfield
+	!space step
+	!small length scale
+	!surface tension
+	!line tension coeff.
+	!how often to print
+	!how many total time steps to take
+	!system size in the x direction
+	!system size in the y direction
+	!check if it reads the initial condition from a data file (= "yes" or "no")
+	!determining the initial condition
+	!switch to turn on/off the electric field (= "on" or "off")
+
+	namelist /input_elec/ lambda_in, lambda_ex, Km, Kw, Cm, Gm, L, U0
+	!conductivity of interior fluid
+	!conductivity of exterior fluid
+	!capacitance of the lipid membrane
+	!conductance of the lipid membrane
+	!membrane to electrodes length
+	!applied potential
+
+	INTEGER 		  :: num_lines, ios, k, u
 	character(len=1)  :: junk
 
+	character(1024) :: input_dir
+
+	call get_command_argument(1, input_dir, status=u)
+	if (u/=0) error stop "please specify input directory like:  ./inputs/"
+
 	! read initial parameters from file
-	open(1,file='../inputs/input')
-		read(1,*) dx          !space step
-		read(1,*) dt          !time step
-		read(1,*) epsilon     !small length scale
-		read(1,*) sigma		  !surface tension
-		read(1,*) gamma       !line tension coeff.
-		read(1,*) file_skip   ! how often to print
-		read(1,*) tmax        !how many total time steps to take
-		read(1,*) Nx          !system size in the x direction
-		read(1,*) Ny          !system size in the y direction 
-		read(1,*) initfile	  !check if it reads the initial condition from a data file (= "yes" or "no")
-		read(1,*) initname    !determining the initial condition
-		read(1,*) elecfield	  !switch to turn on/off the electric field (= "on" or "off")
-	close(1)
-	
+	open(newunit=u,file=trim(input_dir) // '/input.nml', status='old')
+	read(u, nml=input_params)
+
 	if (elecfield == 'on') then
-		open(2, file='../inputs/input_elec')
-			read(2,*) lambda_in 	!conductivity of interior fluid
-			read(2,*) lambda_ex		!conductivity of exterior fluid
-			read(2,*) Km
-			read(2,*) Kw
-			read(2,*) Cm			!capacitance of the lipid membrane
-			read(2,*) Gm			!conductance of the lipid membrane
-			read(2,*) L				!membrane to electrodes length
-			read(2,*) U0			!applied potential
-		close(2)
+		read(u, nml=input_elec)
 	endif
-	
-	!initialize specific parameters 
+	close(u)
+
+	!initialize specific parameters
 	PSI=0.0d0
-	
+
 	W2 = (epsilon*gamma)
-	
+
 	epsilon_0 = 8.8542e-12
-	
+
 	h = 77.99 ! Non-dimensionalized (actual value = 5.0e-9)
-	
+
 	C_0 = (Km*epsilon_0)/(5.0e-9) ! h = 5.e-9 m
-	
+
 	!C_LW = (Kw/Km - 1)*Cm
 	C_LW = (Kw/Km - 1.0)*C_0
-	
+
 	lambda = lambda_in
-	
+
 	M=1.0d0
-	
+
 	dx2_in = 1 / dx**2
-	
+
 	!test that system sizes do not exceed declared dimensions (avoid this using dynamic allocation)
-	if(Nx+1.gt.Nmax.or.Ny+1.gt.Nmax)then 
-		print*, 'One of the system dimensions exceeds array dimensions'
-		stop
+	if(Nx+1.gt.Nmax.or.Ny+1.gt.Nmax)then
+		error stop 'One of the system dimensions exceeds array dimensions'
 	endif
-	
+
 	!teset if the system size given in initial file is the same as it defined in Nx and Ny
 	num_lines = 0
 	if (initfile =='yes') then
-		open(0, file=initname, status='unknown')
+		open(newunit=u, file=initname, status='unknown')
 		do k=1,1000000
-			read(0,*, IOSTAT=ios) junk
+			read(u,*, IOSTAT=ios) junk
 			if (ios /= 0) exit
-			if (k == 1000000) then
-				print*, 'Error: Maximum number of records exceeded'
-				print*, ''
-				print*, 'Runing failure!'
-				STOP
-			endif
+			if (k == 1000000) error stop 'Error: Maximum number of records exceeded'
 			num_lines = num_lines + 1 !number of lines in the file
 		enddo
-		rewind(0) 
+		close(u)
 		if (mod(num_lines, Nx*Ny) /= 0) then
-			print*, 'Error: The system size of the initial file does not'
-			print*, 'maatch with your domain size Nx and Ny'
-			print*, ''
-			print*, 'Runing failure!'
-			STOP
-		endif 
+			error stop 'Error: The system size of the initial file does not maatch with your domain size Nx and Ny'
+		endif
 	endif
-	
+
 	print*,'Global data:'
 	print*,'_________________________________'
 	print 10, sigma, gamma, epsilon, dt, dx, tmax
@@ -127,7 +123,7 @@ subroutine read_globals
 	endif
 	print*, 'Electric field = ', elecfield
 	print*,'_________________________________'
-	
+
 	if (elecfield == 'on') then
 		print*, ''
 		print*, 'Electric data:'
@@ -138,7 +134,7 @@ subroutine read_globals
 40		FORMAT(' Lipid Conductance = ', F8.4,/ ' Electrod Length = ', F8.4,/ ' Applied Potential = ',F8.4)
 		print*, '_________________________________'
 	endif
-	
+
 end subroutine read_globals
 
 

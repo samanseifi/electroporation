@@ -1,8 +1,8 @@
 !! by Saman Seifi
-!!Module contains routines for numerical integration of Allen-Cahn model for system of lipid/pore under applied electricfield 
+!!Module contains routines for numerical integration of Allen-Cahn model for system of lipid/pore under applied electricfield
 !! using central difference (spherical laplacian) formula used for nabla^2
 !!The phase-field derivation is from the book by Provatas and Elder and this code developed on top of Model A
-! 
+!
 !
 MODULE SOLVER
 USE VARIABLES !!where variables are defined
@@ -14,10 +14,12 @@ CONTAINS !-----------
 
 !This subroutine for time evolution of phase-feild equation
 subroutine calculate
-	
+	integer, allocatable :: seed(:)
+	integer :: Nseed, i, u
+
 	!initialize to zero the average of the order parameter
-	ave_psi=0.50d0 
-  
+	ave_psi=0.50d0
+
 	! Determining the initial condition (if initfile=yes load initial profile from file otherwise do the random seed)
 	if (initfile == 'yes') then
 		!reading the initial order parameter from file
@@ -30,35 +32,36 @@ subroutine calculate
 		end do
 		close(3)
 	elseif (initfile == 'no') then  ! default initial profile
-		!set guassian ditributed initial conditions. NOTE: PSI-->order parameter 
+		!set guassian ditributed initial conditions. NOTE: PSI-->order parameter
 		!initialize random seed for random number generation in gasdev()
-		call srand(idum)
+		call random_seed(size = Nseed)
+		ALLOCATE(seed(Nseed))
+		seed = idum
+		call random_seed(put=seed)
+
 		do i=1,Nx
 			do j=1,Ny
-				! set PSI=0 + fluctuations 
+				! set PSI=0 + fluctuations
 				PSI(i,j)=1.0 + 0.001*gasdev2()
 				!update order parameter sum
 				ave_psi=ave_psi+PSI(i,j)
-			end do  
-		end do  	
-	else		
-		print *, 'Error: variable initfile has to be yes or no!'
-		print *, ''
-		print *, 'Running failure!'
-		STOP
+			end do
+		end do
+	else
+		error stop 'Error: variable initfile has to be yes or no!'
 	endif
-  
+
 	!write out initial average value of the order parameter
 	open(2,file='averga_psi',status='unknown')
 	write(2,*) ave_psi/(Nx*Ny)
 
 	!print intial PSI field
-	open(1,file='out_0',status='unknown')
-	call print_2Dfield(PSI, Nx, Ny, 1)
-	close(1)
-	
+	open(newunit=u,file='out_0',status='unknown')
+	call print_2Dfield(PSI, Nx, Ny, u)
+	close(u)
+
 	Vm = 0.0
-	
+
 	open(4, file='Vm', status='unknown')
 	write(4,*) Vm
 	!!!START TIME MARCHING
@@ -70,7 +73,7 @@ subroutine calculate
 		call PERIODIC(PSI)
 		!call ZEROFLUX(PSI)
 		call NABLA2(PSI,grad2)
-		
+
 		!correction coeff for area
 		do i=1,Nx
 			do j=1,Ny
@@ -81,25 +84,25 @@ subroutine calculate
 		end do
 		c0 = ((Nx*Ny) - SUM(PSI_0))/(Nx*Ny - SUM(PSI_P))
 		c1 = (SUM(PSI))/(Nx*Ny)
-		
+
 		!getting the transmembrane voltage
 		!Vm = V_m(V_m_old, t_loop)
-		
+
 		!C_LW = Km*epsilon_0*(1.0 - SUM(PSI_P)/(Nx*Ny))/(5.0e-9) + Kw*epsilon_0*(SUM(PSI_P)/Nx*Ny)/(5.0e-9)
 		!Cm = C_LW
 		open(70, file='Cm', status='unknown')
 		write(70, *) Cm
-		
+
 		Cm = 0.01*c1
 		Vm = Vm - dt*Vm*lambda*(Nx*Ny - SUM(PSI))/(Cm*h) + dt*lambda_ex*F(Vm)/Cm
-		
-		
+
+
 		sigma_elec = 0.5*C_LW*Vm*Vm
 		open(7, file='sigma_e', status='unknown')
 		write(7, *) sigma_elec
-	
+
 		!print*, sigma_elec
-	
+
 		!2. calculate right hand side of model A
 		do i=1, Nx
 			do j=1,Ny
@@ -107,14 +110,14 @@ subroutine calculate
 				RHS(i,j) = (epsilon*gamma)*grad2(i,j) - (gamma/epsilon)*PSI(i,j)*0.5*(1 + 2*PSI(i,j)*PSI(i,j) - 3*PSI(i,j)) &
 					& -(sigma+sigma_elec)*c0*0.5*5.0*(1.0 - tanh(5.0*(PSI(i,j) - 0.5))*tanh(5.0*(PSI(i,j) - 0.5))) &
 					& + 0.5*gasdev2()
-			end do 
+			end do
 		end do
-		
-		
-		
+
+
+
 		!initialize to zero the average of the order parameter for this time step
 		ave_psi=0.0
-	
+
 		!4. take one time step forward
 		do i=1, Nx
 			do j=1,Ny
@@ -125,21 +128,21 @@ subroutine calculate
 
 		!!!!!!!!!!!!!!!!!!! I/O  (print out average & PSI)!!!!!!!!!!!!!!!!!!!!!!!!
 		write(2,*) ave_psi/(Nx*Ny)
-	
+
 		if(mod(t_loop,file_skip)+1 == 1)then
 			call chari(t_loop,cn,il)
-			open(1,file='out_'//cn(1:il),status='unknown')
-			call print_2Dfield( PSI, Nx, Ny, 1)
-			close(1)
+			open(newunit=u,file='out_'//cn(1:il),status='unknown')
+			call print_2Dfield( PSI, Nx, Ny, u)
+			close(u)
 		end if
-		
-		!!!!!!!!!!!!!!!!!!! I/O  (print out stuff)!!!!!!!!!!!!!!!!!!!!!!!!		
+
+		!!!!!!!!!!!!!!!!!!! I/O  (print out stuff)!!!!!!!!!!!!!!!!!!!!!!!!
 		open(4, file='Vm', status='unknown')
 		write(4,*) Vm
-		
+
 		open(5, file='c0', status='unknown')
 		write(5, *) c0
-		
+
 		open(6, file='c1', status='unknown')
 		write(6, *) c1
 
@@ -150,8 +153,8 @@ subroutine calculate
 	close(4) !finish writing into Vm
 	close(5)
 	close(6)
-	
-end subroutine calculate 
+
+end subroutine calculate
 
 !-------------------------------------------------------------------
 !Finite difference calculation of Laplacian of A, stres answer in GR2. (See appendix Provatas, Elder book)
